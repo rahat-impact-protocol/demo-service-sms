@@ -1,0 +1,22 @@
+{
+  "name": "Get Recipients with Payment",
+  "method": "GET",
+  "url": "http://localhost:3000/sms/recipients",
+  "headers": [
+    {
+      "name": "payment-signature",
+      "value": "YOUR_PAYMENT_SIGNATURE_JSON_STRING_HERE"
+    }
+  ],
+  "params": [
+    {
+      "name": "page",
+      "value": "1"
+    },
+    {
+      "name": "skip",
+      "value": "10"
+    }
+  ]
+}
+
