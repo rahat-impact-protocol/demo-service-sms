@@ -15,6 +15,7 @@ interface SendSmsDto {
   to: string;
   from?: string;
   message: string;
+  smsprovider?: string;
 }
 
 interface SendSmsResponse {
@@ -29,14 +30,9 @@ export class SmsController {
 
   @Post('send')
   @DecryptPayload()
-  @DecryptPayment()
+  // @DecryptPayment()
   async sendSms(@Body() dto: SendSmsDto): Promise<SendSmsResponse> {
-    console.log(dto);
-    return {
-      status: 'sent',
-      messageId: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: new Date().toISOString(),
-    };
+    return this.smsService.sendSMS(dto);
   }
 
   @Post('bulk')
@@ -62,18 +58,18 @@ export class SmsController {
     return results;
   }
 
-  @Get('recipients')
-  @RequirePaymentIntent({
-    tokenAddress: '0x2Eb3B2214Bd05DA00494c54776b95e73180FbFda',
-    amount: '1',
-    gatewayAddress: process.env.GATEWAY_ADDRESS || '0xYourGatewayAddress',
-  })
-  async getRecipients(@Query() query: any): Promise<any> {
-    const page = query.page ? Number(query.page) : 1;
-    const skip = query.skip ? Number(query.skip) : 10;
+  // @Get('recipients')
+  // @RequirePaymentIntent({
+  //   tokenAddress: '0x2Eb3B2214Bd05DA00494c54776b95e73180FbFda',
+  //   amount: '1',
+  //   gatewayAddress: process.env.GATEWAY_ADDRESS || '0xYourGatewayAddress',
+  // })
+  // async getRecipients(@Query() query: any): Promise<any> {
+  //   const page = query.page ? Number(query.page) : 1;
+  //   const skip = query.skip ? Number(query.skip) : 10;
 
-    return this.smsService.getRecipientList(page, skip);
-  }
+  //   return this.smsService.getRecipientList(page, skip);
+  // }
 
   @Post('encrypted')
   @DecryptPayload()

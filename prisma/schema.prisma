@@ -14,3 +14,13 @@ model Registry {
   createdAt DateTime @default(now())
   privateKey String?
 }
+
+
+model SmsProvider{
+uuid      String @id @default(uuid())
+name      String 
+value     Json @db.JsonB() 
+pricePerApi String ?
+createdAt  DateTime @default(now())
+updatedAt  DateTime? @updatedAt
+}

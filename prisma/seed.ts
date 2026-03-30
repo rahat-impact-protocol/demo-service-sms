@@ -24,8 +24,32 @@ async function main() {
 
   console.log('Created/Updated registry with Ethereum keypair (secp256k1):');
   console.log('Public Key:', keyPair.publicKey);
-  console.log('Private Key saved to database:', keyPair.privateKey ? 'Yes' : 'No');
+  console.log(
+    'Private Key saved to database:',
+    keyPair.privateKey ? 'Yes' : 'No',
+  );
   console.log('Registry ID:', registry.id);
+  
+  console.log("-----------Adding the sms service provider-----------")
+
+  const smsProvider = await prisma.smsProvider.create({
+    data: {
+      name: 'SMS Provider',
+      value: {
+        url: '',
+        body: {
+          to: '{%address%}',
+          from: 'TheAlert',
+          text: '{%message.content%}',
+          token: "ghjkl;'adssfgtyd",
+        },
+      },
+    },
+  });
+
+  console.log('Created/Updated SMS Provider:');
+  console.log('UUID:', smsProvider.uuid);
+  console.log('Name:', smsProvider.name);
 }
 
 main()
