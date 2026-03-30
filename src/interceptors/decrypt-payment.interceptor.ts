@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ethers } from 'ethers';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { decryptFromService } from '../utils/crypto.util';
 import { gatewayAbi } from './gatewayAbi';
 

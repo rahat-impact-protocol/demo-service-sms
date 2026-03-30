@@ -7,7 +7,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { decryptFromService } from '../utils/crypto.util';
 
 /**
@@ -44,19 +44,19 @@ export class DecryptPayloadInterceptor implements NestInterceptor {
       throw new BadRequestException('Request body is required');
     }
 
-    // Get registry private key from database
-    const registry = await this.prisma.registry.findUnique({
-      where: { id: 'main' },
+     // Get application private key from settings table
+    const accountSettings = await this.prisma.settings.findUnique({
+      where: {name:'account'},
     });
 
-    if (!registry) {
-      throw new InternalServerErrorException('Registry not found');
+    if (!accountSettings) {
+      throw new InternalServerErrorException('Account settings not found');
     }
 
-    const privateKey = registry.privateKey;
+    const privateKey = (accountSettings.value as any)?.privateKey;
     if (!privateKey) {
       throw new InternalServerErrorException(
-        'Registry private key not found. Cannot decrypt payload.',
+        'Account private key not found in settings. Cannot decrypt payload.',
       );
     }
 
@@ -64,7 +64,7 @@ export class DecryptPayloadInterceptor implements NestInterceptor {
       // Decrypt the payload
       const decryptedPayload = decryptFromService(
         privateKey,
-        body.payload,
+        body.message,
       );
 
       // Validate decrypted payload is an object

@@ -50,6 +50,23 @@ async function main() {
   console.log('Created/Updated SMS Provider:');
   console.log('UUID:', smsProvider.uuid);
   console.log('Name:', smsProvider.name);
+
+
+   await prisma.settings.upsert({
+    where: { name: 'account' },
+    update: {},
+    create: {
+      name: 'account',
+      value: {
+        //need update the private key used for contract deployment
+        privateKey: '404b135088bc4046t8ae06c939e3aa2c3ea0fdc0d8c9109926fa5cb7184ec08f',
+      },
+      dataType: 'OBJECT',
+      requiredFields: ['privateKey'],
+      isReadOnly: false,
+      isPrivate: true,
+    },
+  });
 }
 
 main()

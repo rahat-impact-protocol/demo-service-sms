@@ -24,3 +24,23 @@ pricePerApi String ?
 createdAt  DateTime @default(now())
 updatedAt  DateTime? @updatedAt
 }
+
+model Settings{
+  id             String          @default(uuid())
+  name           String          @id @unique
+  value          Json
+  dataType       SettingDataType
+  requiredFields String[]
+  isReadOnly     Boolean         @default(false)
+  isPrivate      Boolean         @default(true)
+
+  @@map("tbl_settings")
+
+}
+
+enum SettingDataType {
+  STRING
+  NUMBER
+  BOOLEAN
+  OBJECT
+}
