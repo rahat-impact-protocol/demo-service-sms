@@ -30,6 +30,19 @@ interface SendSmsResponse {
 export class SmsController {
   constructor(private readonly smsService: SmsService) {}
 
+  @Post('/serviceProvider')
+  async addServiceProvider(data:any){
+    return this.addServiceProvider(data);
+  }
+
+  @Get('/serviceProvider')
+  async listServiceProvider()
+  {
+
+
+
+  }
+
   @Post('send')
   @DecryptPayload()
   // @DecryptPayment()
@@ -56,19 +69,5 @@ export class SmsController {
   //   return this.smsService.getRecipientList(page, skip);
   // }
 
-  @Post('encrypted')
-  @DecryptPayload()
-  async handleEncryptedRequest(@Body() dto: any): Promise<any> {
-    // dto.target contains the target information
-    // dto.payload now contains the decrypted payload (was encrypted hex string)
-    console.log('Target:', dto.target);
-    console.log('Decrypted payload:', dto.payload);
-
-    return {
-      success: true,
-      message: 'Payload decrypted successfully',
-      target: dto.target,
-      payload: dto.payload,
-    };
-  }
+  
 }

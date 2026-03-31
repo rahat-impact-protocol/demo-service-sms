@@ -32,6 +32,27 @@ export class SmsService {
     private readonly prisma: PrismaService,
   ) {}
 
+  async addServiceProvider(data: any) {
+    try {
+      const res = await this.prisma.smsProvider.create({ data });
+      return res;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async listServiceProvider() {
+    return this.prisma.smsProvider.findMany({
+      select: {
+        uuid: true,
+        name: true,
+        pricePerApi: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
   async sendSMS(body: DecryptedData): Promise<SendSmsResponse | any> {
     return this.processSmsRequest(body, ACTIONS.SENDSMS.name);
   }
