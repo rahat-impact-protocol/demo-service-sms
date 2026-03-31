@@ -6,9 +6,22 @@ import { SmsModule } from './sms/sms.module';
 import { PaymentModule } from './payment/payment.module';
 import { PrismaService } from './prisma/prisma.service';
 import { QueueModule } from './queue/queue.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
-  imports: [RegistryModule, SmsModule, PaymentModule, QueueModule],
+  imports: [
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT || '6678'),
+        password: process.env.REDIS_PASSWORD,
+      },
+    }),
+    QueueModule,
+    RegistryModule,
+    SmsModule,
+    PaymentModule,
+  ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })

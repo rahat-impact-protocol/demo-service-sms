@@ -5,6 +5,7 @@ import { PROCESSOR, PROCESSOR_JOB } from 'src/common/constant/processor';
 
 @Processor(PROCESSOR.SMS_RESPONSE)
 export class ResponseProcessor {
+  @Process(PROCESSOR_JOB.SMS_RESPONSE)
   async handleResponse(job: Job) {
     const { callbackUrl, ...body } = job.data;
     if (!callbackUrl) {

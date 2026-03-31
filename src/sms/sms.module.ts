@@ -5,9 +5,12 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { DecryptPayloadInterceptor } from '../interceptors/decrypt-payload.interceptor';
 import { DecryptPaymentInterceptor } from '../interceptors/decrypt-payment.interceptor';
 import { PaymentIntentInterceptor } from '../interceptors/payment-intent.interceptor';
+import { QueueModule } from 'src/queue/queue.module';
+import { BullModule } from '@nestjs/bull';
+import { PROCESSOR } from 'src/common/constant/processor';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, BullModule.registerQueue({name:PROCESSOR.SMS_RESPONSE})],
   controllers: [SmsController],
   providers: [
     SmsService,
