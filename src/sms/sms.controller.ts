@@ -10,13 +10,15 @@ import { SmsService } from './sms.service';
 import { DecryptPayload } from '../decorators/decrypt-payload.decorator';
 import { RequirePaymentIntent } from '../decorators/require-payment-intent.decorator';
 import { DecryptPayment } from 'src/decorators/decrypt-payment.decorator';
+import { SendSmsDto } from './dto/sms.dto';
 
-interface SendSmsDto {
-  to: string;
-  from?: string;
-  message: string;
-  smsprovider?: string;
-}
+// interface SendSmsDto {
+
+//   to: string;
+//   from?: string;
+//   message: string;
+//   smsprovider?: string;
+// }
 
 interface SendSmsResponse {
   status: 'sent' | 'queued' | 'failed';
@@ -32,7 +34,7 @@ export class SmsController {
   @DecryptPayload()
   // @DecryptPayment()
   async sendSms(@Body() dto: SendSmsDto): Promise<SendSmsResponse> {
-    return this.smsService.sendSMS(dto);
+    return this.smsService.sendSMS(dto as any);
   }
 
   @Post('bulk')

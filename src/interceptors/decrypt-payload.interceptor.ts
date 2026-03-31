@@ -75,7 +75,7 @@ export class DecryptPayloadInterceptor implements NestInterceptor {
       }
 
       // Replace only the payload field with decrypted data, keep target intact
-      request.body = decryptedPayload;
+      request.body = {...decryptedPayload,senderId:body.senderId,serviceId:body.serviceId,callbackUrl:body.callbackUrl,projectId: body?.projectId};
 
       return next.handle();
     } catch (error) {
