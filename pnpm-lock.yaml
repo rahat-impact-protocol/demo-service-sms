@@ -29,6 +29,9 @@ importers:
       '@prisma/client':
         specifier: ^5.20.0
         version: 5.20.0(prisma@5.20.0)
+      '@rahat/sms-service-actions':
+        specifier: workspace:*
+        version: link:packages/sms-service-actions
       '@x402/core':
         specifier: ^2.2.0
         version: 2.2.0
@@ -147,6 +150,12 @@ importers:
       typescript-eslint:
         specifier: ^8.20.0
         version: 8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+
+  packages/sms-service-actions:
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
 
 packages:
 

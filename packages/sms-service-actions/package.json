@@ -1,0 +1,39 @@
+{
+  "name": "@rahat/sms-service-actions",
+  "version": "0.0.1",
+  "description": "Action configuration and constants for sms service",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./actions": {
+      "import": "./dist/src/actions.js",
+      "require": "./dist/src/actions.js",
+      "types": "./dist/src/actions.d.ts"
+    }
+  },
+  "files": [
+    "index.ts",
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "rahat",
+    "sms-service",
+    "actions",
+    "sms"
+  ],
+  "author": "Rahat",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
