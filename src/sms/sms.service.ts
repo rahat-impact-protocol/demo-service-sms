@@ -32,6 +32,17 @@ export class SmsService {
   ) {}
 
   async sendSMS(body: DecryptedData): Promise<SendSmsResponse | any> {
+    return this.processSmsRequest(body, 'send');
+  }
+
+  async sendBulkSMS(body: DecryptedData): Promise<SendSmsResponse | any> {
+    return this.processSmsRequest(body, 'bulk');
+  }
+
+  private async processSmsRequest(
+    body: DecryptedData,
+    actionPerformed: 'send' | 'bulk',
+  ): Promise<SendSmsResponse | any> {
     let status;
     let responsePayload: any = {};
     const { callbackUrl, data, senderId, serviceId } = body;
@@ -89,7 +100,7 @@ export class SmsService {
         status = 'error';
         responsePayload = {
           error: responseText,
-          status: response,
+          status: response.status,
           data: receiver,
         };
         await this.responseQueue.add(PROCESSOR_JOB.SMS_RESPONSE, {
@@ -99,32 +110,16 @@ export class SmsService {
           responseSender: serviceId,
           responseReceiver: senderId,
           projectId: body?.projectId,
-          actionPerformed: 'send',
+          actionPerformed,
         });
-        // throw new InternalServerErrorException(
-        //   `SMS provider request failed with status ${response.status}: ${responseText}`,
-        // );
+        return;
       }
-      ((status = 'sucess'),
-        (responsePayload = response),
-        await this.responseQueue.add(PROCESSOR_JOB.SMS_RESPONSE, {
-          status,
-          responsePayload,
-          callbackUrl,
-          responseSender: serviceId,
-          responseReceiver: senderId,
-          projectId: body?.projectId,
-          actionPerformed: 'send',
-        }));
 
-      // return {
-      //   status: 'sent',
-      //   messageId: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
-      //   timestamp: new Date().toISOString(),
-      // };
-    } catch (err) {
-      status = 'error';
-      responsePayload = { error: err.message || err, data: receiver };
+      status = 'success';
+      responsePayload = {
+        status: response.status,
+        data: receiver,
+      };
       await this.responseQueue.add(PROCESSOR_JOB.SMS_RESPONSE, {
         status,
         responsePayload,
@@ -132,7 +127,28 @@ export class SmsService {
         responseSender: serviceId,
         responseReceiver: senderId,
         projectId: body?.projectId,
-        actionPerformed: 'send',
+        actionPerformed,
+      });
+
+      return {
+        status: 'sent',
+        messageId: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (err) {
+      status = 'error';
+      responsePayload = {
+        error: err instanceof Error ? err.message : err,
+        data: receiver,
+      };
+      await this.responseQueue.add(PROCESSOR_JOB.SMS_RESPONSE, {
+        status,
+        responsePayload,
+        callbackUrl,
+        responseSender: serviceId,
+        responseReceiver: senderId,
+        projectId: body?.projectId,
+        actionPerformed,
       });
       console.log(err);
     }

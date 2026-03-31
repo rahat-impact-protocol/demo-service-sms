@@ -10,7 +10,7 @@ import { SmsService } from './sms.service';
 import { DecryptPayload } from '../decorators/decrypt-payload.decorator';
 import { RequirePaymentIntent } from '../decorators/require-payment-intent.decorator';
 import { DecryptPayment } from 'src/decorators/decrypt-payment.decorator';
-import { SendSmsDto } from './dto/sms.dto';
+import { DecryptedData, SendSmsDto } from './dto/sms.dto';
 
 // interface SendSmsDto {
 
@@ -33,31 +33,14 @@ export class SmsController {
   @Post('send')
   @DecryptPayload()
   // @DecryptPayment()
-  async sendSms(@Body() dto: SendSmsDto): Promise<SendSmsResponse> {
+  async sendSms(@Body() dto: DecryptedData): Promise<SendSmsResponse> {
     return this.smsService.sendSMS(dto as any);
   }
 
   @Post('bulk')
-  async sendBulkSms(@Body() dto: SendSmsDto[]): Promise<SendSmsResponse[]> {
-    const results: SendSmsResponse[] = [];
-
-    for (let i = 0; i < dto.length; i++) {
-      console.log('Sending SMS to');
-      // Process each request
-      const result: SendSmsResponse = {
-        status: 'sent',
-        messageId: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        timestamp: new Date().toISOString(),
-      };
-      results.push(result);
-
-      // Wait 2 seconds before processing next request (except for the last one)
-      if (i < dto.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      }
-    }
-
-    return results;
+  @DecryptPayload()
+  async sendBulkSms(@Body() dto: DecryptedData): Promise<SendSmsResponse> {
+    return this.smsService.sendBulkSMS(dto as any);
   }
 
   // @Get('recipients')
