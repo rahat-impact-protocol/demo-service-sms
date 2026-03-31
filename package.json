@@ -22,6 +22,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/bull": "^11.0.4",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
@@ -32,6 +33,8 @@
     "@x402/evm": "^2.2.0",
     "@x402/express": "^2.2.0",
     "@x402/fetch": "^2.2.0",
+    "axios": "^1.14.0",
+    "bullmq": "^5.71.1",
     "class-validator": "^0.15.1",
     "eciesjs": "^0.4.17",
     "ethereumjs-util": "^7.1.5",

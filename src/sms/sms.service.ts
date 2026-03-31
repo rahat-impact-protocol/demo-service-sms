@@ -7,6 +7,9 @@ import {
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { DecryptedData, SendSmsDto, SendSmsPayload } from './dto/sms.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { PROCESSOR, PROCESSOR_JOB } from 'src/common/constant/processor';
+import { Queue } from 'bullmq';
 
 type ProviderConfig = {
   url: string;
@@ -23,14 +26,17 @@ type SendSmsResponse = {
 
 @Injectable()
 export class SmsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @InjectQueue(PROCESSOR.SMS_RESPONSE) private readonly responseQueue: Queue,
+    private readonly prisma: PrismaService,
+  ) {}
 
   async sendSMS(body: DecryptedData): Promise<SendSmsResponse | any> {
+    let status;
+    let responsePayload: any = {};
+    const { callbackUrl, data, senderId, serviceId } = body;
+    const receiver = data.receiver ?? data.to;
     try {
-      const { callbackUrl, data, senderId, serviceId } = body;
-
-      const receiver = data.receiver ?? data.to;
-
       if (!receiver) {
         throw new BadRequestException('receiver or to is required');
       }
@@ -80,17 +86,54 @@ export class SmsService {
 
       if (!response.ok) {
         const responseText = await response.text();
-        throw new InternalServerErrorException(
-          `SMS provider request failed with status ${response.status}: ${responseText}`,
-        );
+        status = 'error';
+        responsePayload = {
+          error: responseText,
+          status: response,
+          data: receiver,
+        };
+        await this.responseQueue.add(PROCESSOR_JOB.SMS_RESPONSE, {
+          status,
+          responsePayload,
+          callbackUrl,
+          responseSender: serviceId,
+          responseReceiver: senderId,
+          projectId: body?.projectId,
+          actionPerformed: 'send',
+        });
+        // throw new InternalServerErrorException(
+        //   `SMS provider request failed with status ${response.status}: ${responseText}`,
+        // );
       }
+      ((status = 'sucess'),
+        (responsePayload = response),
+        await this.responseQueue.add(PROCESSOR_JOB.SMS_RESPONSE, {
+          status,
+          responsePayload,
+          callbackUrl,
+          responseSender: serviceId,
+          responseReceiver: senderId,
+          projectId: body?.projectId,
+          actionPerformed: 'send',
+        }));
 
-      return {
-        status: 'sent',
-        messageId: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
-        timestamp: new Date().toISOString(),
-      };
+      // return {
+      //   status: 'sent',
+      //   messageId: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+      //   timestamp: new Date().toISOString(),
+      // };
     } catch (err) {
+      status = 'error';
+      responsePayload = { error: err.message || err, data: receiver };
+      await this.responseQueue.add(PROCESSOR_JOB.SMS_RESPONSE, {
+        status,
+        responsePayload,
+        callbackUrl,
+        responseSender: serviceId,
+        responseReceiver: senderId,
+        projectId: body?.projectId,
+        actionPerformed: 'send',
+      });
       console.log(err);
     }
   }
