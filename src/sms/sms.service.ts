@@ -10,6 +10,7 @@ import { DecryptedData, SendSmsDto, SendSmsPayload } from './dto/sms.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { PROCESSOR, PROCESSOR_JOB } from 'src/common/constant/processor';
 import { Queue } from 'bullmq';
+import { ACTIONS } from '@rahat/sms-service-actions';
 
 type ProviderConfig = {
   url: string;
@@ -32,16 +33,16 @@ export class SmsService {
   ) {}
 
   async sendSMS(body: DecryptedData): Promise<SendSmsResponse | any> {
-    return this.processSmsRequest(body, 'send');
+    return this.processSmsRequest(body, ACTIONS.SENDSMS.name);
   }
 
   async sendBulkSMS(body: DecryptedData): Promise<SendSmsResponse | any> {
-    return this.processSmsRequest(body, 'bulk');
+    return this.processSmsRequest(body, ACTIONS.BULKSMS.name);
   }
 
   private async processSmsRequest(
     body: DecryptedData,
-    actionPerformed: 'send' | 'bulk',
+    actionPerformed: 'sendsms' | 'bulksms',
   ): Promise<SendSmsResponse | any> {
     let status;
     let responsePayload: any = {};

@@ -7,7 +7,7 @@
 
 export const ACTIONS = {
   SENDSMS: {
-    name: 'sms',
+    name: 'sendsms',
     path: '/send',
     method: 'POST',
     // processor: 'token_disbursement',
