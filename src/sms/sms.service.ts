@@ -28,6 +28,7 @@ type SendSmsResponse = {
 @Injectable()
 export class SmsService {
   constructor(
+    @InjectQueue(PROCESSOR.SEND_SMS) private readonly smsQueue: Queue,
     @InjectQueue(PROCESSOR.SMS_RESPONSE) private readonly responseQueue: Queue,
     private readonly prisma: PrismaService,
   ) {}
@@ -54,14 +55,32 @@ export class SmsService {
   }
 
   async sendSMS(body: DecryptedData): Promise<SendSmsResponse | any> {
-    return this.processSmsRequest(body, ACTIONS.SENDSMS.name);
+    await this.smsQueue.add(PROCESSOR_JOB.SEND_SMS, {
+      body,
+      actionPerformed: ACTIONS.SENDSMS.name,
+    });
+
+    return {
+      status: 'queued',
+      messageId: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+      timestamp: new Date().toISOString(),
+    };
   }
 
   async sendBulkSMS(body: DecryptedData): Promise<SendSmsResponse | any> {
-    return this.processSmsRequest(body, ACTIONS.BULKSMS.name);
+    await this.smsQueue.add(PROCESSOR_JOB.BULK_SEND_SMS, {
+      body,
+      actionPerformed: ACTIONS.BULKSMS.name,
+    });
+
+    return {
+      status: 'queued',
+      messageId: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+      timestamp: new Date().toISOString(),
+    };
   }
 
-  private async processSmsRequest(
+  async executeSmsRequest(
     body: DecryptedData,
     actionPerformed: 'sendsms' | 'bulksms',
   ): Promise<SendSmsResponse | any> {
