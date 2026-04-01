@@ -9,6 +9,11 @@ export class AppController {
     private readonly prisma: PrismaService
   ) {}
 
+  @Get('/health')
+  checkHealthStatus():string{
+    return 'OK'
+  }
+
   @Get()
   getHello(): string {
     return this.appService.getHello();

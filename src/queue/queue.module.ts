@@ -6,7 +6,6 @@ import { ResponseProcessor } from './response.processor';
 
 @Module({
     imports:[
-         
     BullModule.registerQueue(
       { name: PROCESSOR.SMS_RESPONSE },
     ),
