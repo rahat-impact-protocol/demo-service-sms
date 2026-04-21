@@ -48,8 +48,8 @@ export function encryptForService(
   // Encrypt using ECIES
   const encrypted = eciesEncrypt(pub, data);
 
-  // Return as hex string with 0x prefix
-  return '0x' + encrypted.toString('hex');
+  // Return as hex string with 0x prefix  
+  return '0x' + Buffer.from(encrypted).toString('hex');
 }
 
 /**
@@ -71,7 +71,7 @@ export function decryptFromService(
   const decrypted = eciesDecrypt(priv, encrypted);
 
   // Parse JSON and return
-  return JSON.parse(decrypted.toString('utf8'));
+  return JSON.parse(Buffer.from(decrypted).toString('utf8'));
 }
 
 /**
@@ -88,7 +88,7 @@ export function decryptFromServiceAsBuffer(
   const priv = Buffer.from(receiverPrivateKey.replace(/^0x/, ''), 'hex');
   const encrypted = Buffer.from(encryptedHex.replace(/^0x/, ''), 'hex');
 
-  return eciesDecrypt(priv, encrypted);
+  return Buffer.from(eciesDecrypt(priv, encrypted));
 }
 
 /**

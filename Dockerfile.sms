@@ -1,0 +1,32 @@
+FROM node:22-alpine AS builder
+WORKDIR /app
+
+COPY pnpm-workspace.yaml ./
+COPY packages ./packages
+COPY ./package.json ./
+RUN npm i -g pnpm@9.15.2 && pnpm install
+
+COPY . .
+RUN pnpm build
+RUN pnpm prisma:generate
+
+# --- Final minimal image ---
+FROM node:22-alpine AS runner
+WORKDIR /app
+
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
+    && chown -R appuser:appgroup /app
+
+COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
+COPY --from=builder --chown=appuser:appgroup /app/packages ./packages
+COPY --from=builder --chown=appuser:appgroup /app/dist ./dist
+COPY --from=builder --chown=appuser:appgroup /app/prisma ./prisma
+COPY --from=builder --chown=appuser:appgroup /app/package.json ./
+COPY --from=builder --chown=appuser:appgroup /app/pnpm-workspace.yaml ./
+
+USER appuser
+
+CMD ["node", "dist/src/main.js"]
+
+
+

@@ -9,5 +9,7 @@ export const decryptPayload = (receiverPrivateKey, encryptedHex) => {
   const decrypted = eciesDecrypt(priv, encrypted);
 
   // Parse JSON and return
+
+  //@ts-ignore
   return JSON.parse(decrypted.toString('utf8'));
 };
