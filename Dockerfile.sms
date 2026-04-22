@@ -41,7 +41,6 @@ COPY --from=builder --chown=appuser:appgroup /app/pnpm-workspace.yaml ./
 EXPOSE 3337
 USER appuser
 
-CMD ["node", "dist/src/main.js"]
-
+CMD ["node", "dist/main.js"]
 
 
