@@ -18,6 +18,19 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install pnpm
+        run: npm install -g pnpm@9.15.2
+
+      - name: pnpm install
+        run: pnpm install
+
+
       - name: Import secrets from vault
         uses: hashicorp/vault-action@v3
         with:
