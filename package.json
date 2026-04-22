@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "sh  scripts/build.sh",
+    "build": "sh  scripts/build-dist.sh",
     "docker:build": "docker build -f Dockerfile.sms -t sms-service:latest .",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
