@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: esatya/sms-service
-
+  IMAGE_NAME: esatya/rahat-impact-sms
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -66,5 +65,5 @@ jobs:
           file: Dockerfile.sms
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:dev
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
