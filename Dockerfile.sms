@@ -16,13 +16,13 @@ RUN pnpm build && pnpm prisma:generate
 # --- Final minimal image ---
 FROM node:22-alpine AS runner
 WORKDIR /app
+
 RUN apk add --no-cache openssl
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
     && chown -R appuser:appgroup /app
 
 COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
-# COPY --from=builder --chown=appuser:appgroup /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder --chown=appuser:appgroup /app/packages ./packages
 COPY --from=builder --chown=appuser:appgroup /app/dist ./dist
 COPY --from=builder --chown=appuser:appgroup /app/prisma ./prisma
@@ -33,5 +33,4 @@ EXPOSE 3337
 USER appuser
 
 CMD ["node", "dist/main.js"]
-
 
